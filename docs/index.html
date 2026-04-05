@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Talktiv — Code with your voice</title>
+<meta name="description" content="Talktiv turns speech into text instantly, right where your cursor is. On-device AI. No cloud. No typing. Just talk.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&family=Manrope:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+:root {
+  --bg-deep: #08080f;
+  --bg-dark: #0f0f1a;
+  --bg-mid: #1a1a2e;
+  --bg-surface: #1e1e35;
+  --purple: #6C63FF;
+  --purple-light: #8B83FF;
+  --purple-glow: rgba(108, 99, 255, 0.15);
+  --purple-faint: rgba(108, 99, 255, 0.06);
+  --text-primary: #e8e6f0;
+  --text-secondary: #8a879e;
+  --text-muted: #5a5773;
+  --border: rgba(255, 255, 255, 0.04);
+  --font-display: 'Instrument Serif', Georgia, serif;
+  --font-body: 'Manrope', system-ui, sans-serif;
+  --font-mono: 'DM Mono', monospace;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--bg-deep);
+  color: var(--text-primary);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ═══════ NOISE OVERLAY ═══════ */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.025;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 256px 256px;
+}
+
+/* ═══════ REVEAL ANIMATIONS ═══════ */
+.reveal {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.9s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.9s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal-d1 { transition-delay: 0.1s; }
+.reveal-d2 { transition-delay: 0.2s; }
+.reveal-d3 { transition-delay: 0.3s; }
+.reveal-d4 { transition-delay: 0.4s; }
+.reveal-d5 { transition-delay: 0.5s; }
+
+/* ═══════ LAYOUT ═══════ */
+.container {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 32px;
+}
+
+section {
+  padding: 120px 0;
+  position: relative;
+}
+
+/* ═══════ NAV ═══════ */
+nav {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 100;
+  padding: 20px 0;
+  transition: background 0.3s, backdrop-filter 0.3s;
+}
+nav.scrolled {
+  background: rgba(8, 8, 15, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+}
+nav .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.nav-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-decoration: none;
+  color: var(--text-primary);
+}
+.nav-logo-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--bg-mid), var(--bg-dark));
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 7px 5px;
+  gap: 2.5px;
+  border: 1px solid rgba(108, 99, 255, 0.15);
+}
+.nav-logo-icon span {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: linear-gradient(90deg, #6C63FF, #A89CFF);
+}
+.nav-logo-icon span:nth-child(1) { width: 20px; }
+.nav-logo-icon span:nth-child(2) { width: 16px; }
+.nav-logo-icon span:nth-child(3) { width: 12px; }
+.nav-logo-text {
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 16px;
+  letter-spacing: -0.02em;
+}
+.nav-download {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--purple-light);
+  text-decoration: none;
+  padding: 8px 18px;
+  border: 1px solid rgba(108, 99, 255, 0.25);
+  border-radius: 8px;
+  transition: all 0.25s;
+}
+.nav-download:hover {
+  background: var(--purple-glow);
+  border-color: rgba(108, 99, 255, 0.5);
+}
+
+/* ═══════ HERO ═══════ */
+.hero {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  padding-top: 80px;
+  position: relative;
+}
+.hero::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 900px;
+  height: 900px;
+  background: radial-gradient(ellipse, rgba(108, 99, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+.hero-inner {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 80px;
+  align-items: center;
+}
+.hero-content { position: relative; z-index: 1; }
+.hero-eyebrow {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  color: var(--purple);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  margin-bottom: 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.hero-eyebrow::before {
+  content: '';
+  width: 24px;
+  height: 1px;
+  background: var(--purple);
+}
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(56px, 7vw, 88px);
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--text-primary);
+  margin-bottom: 28px;
+}
+.hero-title em {
+  font-style: italic;
+  background: linear-gradient(135deg, var(--purple), var(--purple-light));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-sub {
+  font-size: 18px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  max-width: 460px;
+  margin-bottom: 44px;
+  font-weight: 300;
+}
+.hero-actions {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body);
+  font-weight: 600;
+  font-size: 15px;
+  color: #fff;
+  background: var(--purple);
+  padding: 16px 32px;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 0 0 0 rgba(108, 99, 255, 0),
+              0 4px 24px rgba(108, 99, 255, 0.25);
+  position: relative;
+  overflow: hidden;
+}
+.btn-primary::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 0 4px rgba(108, 99, 255, 0.15),
+              0 8px 32px rgba(108, 99, 255, 0.35);
+}
+.btn-primary:hover::before { opacity: 1; }
+.btn-primary svg { width: 18px; height: 18px; }
+.hero-meta {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+/* ═══════ APP ICON (CSS) ═══════ */
+.hero-visual {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+.app-icon-wrap {
+  position: relative;
+  width: 280px;
+  height: 280px;
+}
+.app-icon {
+  width: 280px;
+  height: 280px;
+  border-radius: 62px;
+  background: linear-gradient(145deg, #1a1a2e, #0f0f1a);
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: center;
+  padding: 70px 55px;
+  gap: 18px;
+  position: relative;
+  box-shadow: 0 40px 80px rgba(0,0,0,0.5),
+              0 0 0 1px rgba(108, 99, 255, 0.1),
+              inset 0 1px 0 rgba(255,255,255,0.03);
+  transform: rotate(-3deg);
+  animation: icon-float 6s ease-in-out infinite;
+}
+@keyframes icon-float {
+  0%, 100% { transform: rotate(-3deg) translateY(0); }
+  50% { transform: rotate(-3deg) translateY(-12px); }
+}
+.app-icon .bar {
+  height: 18px;
+  border-radius: 9px;
+  transform: rotate(-3deg);
+}
+.app-icon .bar:nth-child(1) {
+  width: 170px;
+  background: linear-gradient(90deg, #6C63FF, #8B83FF);
+}
+.app-icon .bar:nth-child(2) {
+  width: 135px;
+  background: linear-gradient(90deg, #8B83FF, #A89CFF);
+}
+.app-icon .bar:nth-child(3) {
+  width: 100px;
+  background: linear-gradient(90deg, #A89CFF, #C4BEFF);
+}
+.app-icon-glow {
+  position: absolute;
+  inset: -40px;
+  border-radius: 100px;
+  background: radial-gradient(circle, rgba(108, 99, 255, 0.12) 0%, transparent 70%);
+  z-index: -1;
+  animation: glow-pulse 4s ease-in-out infinite;
+}
+@keyframes glow-pulse {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+
+/* ═══════ FEATURES ═══════ */
+.features {
+  background: linear-gradient(180deg, var(--bg-deep) 0%, var(--bg-dark) 100%);
+  border-top: 1px solid var(--border);
+}
+.section-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--purple);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(36px, 4.5vw, 52px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  margin-bottom: 64px;
+  max-width: 560px;
+}
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+.feature-card {
+  background: var(--bg-dark);
+  padding: 48px 36px;
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  position: relative;
+  overflow: hidden;
+}
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--purple), transparent);
+  opacity: 0;
+  transition: opacity 0.4s;
+}
+.feature-card:hover {
+  background: var(--bg-mid);
+  border-color: rgba(108, 99, 255, 0.1);
+  transform: translateY(-4px);
+}
+.feature-card:hover::before { opacity: 1; }
+.feature-icon {
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--purple-faint);
+  border: 1px solid rgba(108, 99, 255, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 28px;
+  font-size: 24px;
+}
+.feature-card h3 {
+  font-family: var(--font-body);
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+  letter-spacing: -0.01em;
+}
+.feature-card p {
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text-secondary);
+  font-weight: 300;
+}
+
+/* ═══════ HOW IT WORKS ═══════ */
+.how-it-works {
+  background: var(--bg-dark);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+}
+.steps {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 48px;
+  counter-reset: step;
+  position: relative;
+}
+.steps::before {
+  content: '';
+  position: absolute;
+  top: 36px;
+  left: 15%;
+  right: 15%;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--border), var(--border), transparent);
+}
+.step {
+  text-align: center;
+  counter-increment: step;
+  position: relative;
+}
+.step-num {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  background: var(--bg-deep);
+  border: 1px solid rgba(108, 99, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 28px;
+  font-family: var(--font-mono);
+  font-size: 24px;
+  color: var(--purple);
+  position: relative;
+  z-index: 1;
+}
+.step h3 {
+  font-size: 17px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+.step p {
+  font-size: 14px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  font-weight: 300;
+}
+
+/* ═══════ SPECS ═══════ */
+.specs {
+  background: var(--bg-deep);
+}
+.specs-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 2px;
+}
+.spec {
+  text-align: center;
+  padding: 36px 20px;
+  background: var(--bg-dark);
+  border-radius: 16px;
+  border: 1px solid var(--border);
+}
+.spec-value {
+  font-family: var(--font-display);
+  font-size: 32px;
+  color: var(--text-primary);
+  margin-bottom: 6px;
+}
+.spec-label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+/* ═══════ CTA ═══════ */
+.cta-section {
+  background: var(--bg-dark);
+  border-top: 1px solid var(--border);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.cta-section::before {
+  content: '';
+  position: absolute;
+  bottom: -200px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 400px;
+  background: radial-gradient(ellipse, rgba(108, 99, 255, 0.06) 0%, transparent 70%);
+  pointer-events: none;
+}
+.cta-title {
+  font-family: var(--font-display);
+  font-size: clamp(40px, 5vw, 64px);
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  margin-bottom: 20px;
+}
+.cta-sub {
+  font-size: 17px;
+  color: var(--text-secondary);
+  margin-bottom: 40px;
+  font-weight: 300;
+}
+.cta-requirement {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 20px;
+}
+
+/* ═══════ FOOTER ═══════ */
+footer {
+  padding: 40px 0;
+  border-top: 1px solid var(--border);
+  background: var(--bg-deep);
+}
+footer .container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.footer-text {
+  font-size: 13px;
+  color: var(--text-muted);
+}
+.footer-links {
+  display: flex;
+  gap: 20px;
+  align-items: center;
+}
+.footer-links a {
+  color: var(--text-muted);
+  text-decoration: none;
+  transition: color 0.2s;
+  display: flex;
+  align-items: center;
+}
+.footer-links a:hover { color: var(--text-secondary); }
+
+/* ═══════ RESPONSIVE ═══════ */
+@media (max-width: 900px) {
+  .hero-inner {
+    grid-template-columns: 1fr;
+    gap: 60px;
+    text-align: center;
+  }
+  .hero-content { order: 2; }
+  .hero-visual { order: 1; }
+  .hero-sub { margin-left: auto; margin-right: auto; }
+  .hero-eyebrow { justify-content: center; }
+  .hero-actions { justify-content: center; }
+  .features-grid { grid-template-columns: 1fr; gap: 16px; }
+  .steps { grid-template-columns: 1fr; gap: 40px; }
+  .steps::before { display: none; }
+  .specs-grid { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .app-icon-wrap { width: 200px; height: 200px; }
+  .app-icon {
+    width: 200px; height: 200px;
+    border-radius: 44px; padding: 50px 38px; gap: 13px;
+  }
+  .app-icon .bar { height: 14px; border-radius: 7px; }
+  .app-icon .bar:nth-child(1) { width: 120px; }
+  .app-icon .bar:nth-child(2) { width: 96px; }
+  .app-icon .bar:nth-child(3) { width: 72px; }
+}
+@media (max-width: 600px) {
+  section { padding: 80px 0; }
+  .container { padding: 0 20px; }
+  .specs-grid { grid-template-columns: repeat(2, 1fr); }
+  footer .container { flex-direction: column; gap: 16px; text-align: center; }
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="container">
+    <a href="#" class="nav-logo">
+      <div class="nav-logo-icon">
+        <span></span><span></span><span></span>
+      </div>
+      <span class="nav-logo-text">Talktiv</span>
+    </a>
+    <a href="https://github.com/saadzniber/talktiv-site/releases/latest/download/Talktiv.dmg" class="nav-download">Download v0.1.0</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="container">
+    <div class="hero-inner">
+      <div class="hero-content">
+        <div class="hero-eyebrow reveal reveal-d1">Voice-to-text for macOS</div>
+        <h1 class="hero-title reveal reveal-d2">Code with<br>your <em>voice.</em></h1>
+        <p class="hero-sub reveal reveal-d3">Talktiv turns speech into text instantly &mdash; right where your cursor is. No cloud. No typing. Just talk.</p>
+        <div class="hero-actions reveal reveal-d4">
+          <a href="https://github.com/saadzniber/talktiv-site/releases/latest/download/Talktiv.dmg" class="btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Download for macOS
+          </a>
+          <span class="hero-meta">v0.1.0 &middot; Apple Silicon</span>
+        </div>
+      </div>
+      <div class="hero-visual reveal reveal-d3">
+        <div class="app-icon-wrap">
+          <div class="app-icon-glow"></div>
+          <div class="app-icon">
+            <div class="bar"></div>
+            <div class="bar"></div>
+            <div class="bar"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FEATURES -->
+<section class="features">
+  <div class="container">
+    <div class="section-label reveal">Features</div>
+    <h2 class="section-title reveal reveal-d1">Built for developers who <em style="font-family:var(--font-display);font-style:italic;">think faster</em> than they type.</h2>
+    <div class="features-grid">
+      <div class="feature-card reveal reveal-d2">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
+        </div>
+        <h3>Hands-free mode</h3>
+        <p>Just speak. Talktiv auto-detects your voice and types it out. No buttons, no shortcuts, no friction.</p>
+      </div>
+      <div class="feature-card reveal reveal-d3">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/><circle cx="12" cy="10" r="2" fill="#6C63FF" stroke="none"/></svg>
+        </div>
+        <h3>100% on-device</h3>
+        <p>Powered by Whisper AI running locally on your Mac. Your voice never leaves your machine. Total privacy.</p>
+      </div>
+      <div class="feature-card reveal reveal-d4">
+        <div class="feature-icon">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#6C63FF" stroke-width="1.5" stroke-linecap="round"><path d="M14 9l-4 6"/><path d="M4 12h2"/><path d="M18 12h2"/><circle cx="12" cy="12" r="10"/></svg>
+        </div>
+        <h3>Smart cleanup</h3>
+        <p>Filler words, background noise, and non-speech sounds are stripped automatically. Only clean text gets typed.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HOW IT WORKS -->
+<section class="how-it-works">
+  <div class="container">
+    <div class="section-label reveal">How it works</div>
+    <h2 class="section-title reveal reveal-d1">Three steps. Sixty seconds.</h2>
+    <div class="steps">
+      <div class="step reveal reveal-d2">
+        <div class="step-num">1</div>
+        <h3>Install</h3>
+        <p>Download the app, drag to Applications. Grant mic &amp; accessibility access during setup.</p>
+      </div>
+      <div class="step reveal reveal-d3">
+        <div class="step-num">2</div>
+        <h3>Speak</h3>
+        <p>Hold your shortcut or enable hands-free mode. Speak naturally into any microphone.</p>
+      </div>
+      <div class="step reveal reveal-d4">
+        <div class="step-num">3</div>
+        <h3>Text appears</h3>
+        <p>Transcribed text is typed directly into whatever app you're using. Code, notes, messages &mdash; anywhere.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SPECS -->
+<section class="specs">
+  <div class="container">
+    <div class="section-label reveal">Specs</div>
+    <h2 class="section-title reveal reveal-d1">Everything you need, nothing you don't.</h2>
+    <div class="specs-grid">
+      <div class="spec reveal reveal-d1">
+        <div class="spec-value">14+</div>
+        <div class="spec-label">macOS version</div>
+      </div>
+      <div class="spec reveal reveal-d2">
+        <div class="spec-value">30+</div>
+        <div class="spec-label">Languages</div>
+      </div>
+      <div class="spec reveal reveal-d3">
+        <div class="spec-value">4</div>
+        <div class="spec-label">Model sizes</div>
+      </div>
+      <div class="spec reveal reveal-d4">
+        <div class="spec-value">&infin;</div>
+        <div class="spec-label">Any microphone</div>
+      </div>
+      <div class="spec reveal reveal-d5">
+        <div class="spec-value">
+          <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        </div>
+        <div class="spec-label">Menu bar app</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="container">
+    <h2 class="cta-title reveal">Stop typing.<br>Start <em style="font-family:var(--font-display);font-style:italic;">talking.</em></h2>
+    <p class="cta-sub reveal reveal-d1">Download Talktiv and code with your voice today.</p>
+    <div class="reveal reveal-d2">
+      <a href="https://github.com/saadzniber/talktiv-site/releases/latest/download/Talktiv.dmg" class="btn-primary">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Download for macOS v0.1.0
+      </a>
+      <p class="cta-requirement">Requires macOS 14 Sonoma or later &middot; Apple Silicon</p>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <span class="footer-text">Built by Saad Zniber</span>
+    <div class="footer-links">
+      <a href="https://github.com/saadzniber/talktiv-site" aria-label="GitHub">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+      </a>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Scroll reveal
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+
+document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+// Nav scroll effect
+const nav = document.querySelector('nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 40);
+}, { passive: true });
+</script>
+
+</body>
+</html>
