@@ -3,330 +3,521 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Talktiv — Code with your voice</title>
+<title>Talktiv — Your voice, everywhere your cursor is</title>
 <meta name="description" content="Talktiv turns speech into text 3.75x faster than typing. On-device Whisper AI. No cloud. Free for macOS.">
-<meta property="og:title" content="Talktiv — Code with your voice">
-<meta property="og:description" content="3.75x faster than typing. On-device AI. No cloud. Just talk and code.">
+<meta property="og:title" content="Talktiv — Your voice, everywhere your cursor is">
+<meta property="og:description" content="3.75x faster than typing. On-device AI. No cloud. Speak and text appears wherever your cursor is.">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600;700;800&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
 :root{
---bg:#09090b;--bg-2:#111113;--bg-3:#18181b;--bg-4:#1f1f23;
---accent:#f97316;--accent-2:#fb923c;--accent-glow:rgba(249,115,22,.12);
---violet:#a78bfa;--cyan:#22d3ee;--emerald:#34d399;--rose:#fb7185;
---text:#fafafa;--text-2:#a1a1aa;--text-3:#52525b;
---border:rgba(255,255,255,.06);--border-2:rgba(255,255,255,.1);
---font-display:'Syne',sans-serif;
---font-body:'Outfit',sans-serif;
---font-mono:'DM Mono',monospace;
---grad:linear-gradient(135deg,#f97316,#ec4899,#a78bfa);
+  --bg:#060608;--bg-2:#0c0c10;--bg-3:#131318;--bg-4:#1a1a22;--bg-5:#222230;
+  --accent:#f97316;--accent-2:#fb923c;--accent-glow:rgba(249,115,22,.1);
+  --violet:#a78bfa;--violet-glow:rgba(167,139,250,.08);
+  --cyan:#22d3ee;--emerald:#34d399;--rose:#fb7185;
+  --text:#f0f0f5;--text-2:#8b8b9e;--text-3:#4a4a5e;
+  --border:rgba(255,255,255,.05);--border-2:rgba(255,255,255,.08);--border-3:rgba(255,255,255,.12);
+  --font-display:'Bricolage Grotesque',sans-serif;
+  --font-body:'Outfit',sans-serif;
+  --font-mono:'JetBrains Mono',monospace;
+  --grad:linear-gradient(135deg,#f97316,#ec4899,#a78bfa);
+  --grad-subtle:linear-gradient(135deg,rgba(249,115,22,.15),rgba(236,72,153,.1),rgba(167,139,250,.08));
 }
 html{scroll-behavior:smooth}
-body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+body{font-family:var(--font-body);background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
 
-/* grain */
-body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.03;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+/* grain overlay */
+body::after{content:'';position:fixed;inset:0;z-index:9999;pointer-events:none;opacity:.025;background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
 
-/* reveal */
-.r{opacity:0;transform:translateY(28px);transition:opacity .7s cubic-bezier(.16,1,.3,1),transform .7s cubic-bezier(.16,1,.3,1)}
-.r.v{opacity:1;transform:translateY(0)}
-.d1{transition-delay:.08s}.d2{transition-delay:.16s}.d3{transition-delay:.24s}.d4{transition-delay:.32s}.d5{transition-delay:.4s}
+/* scroll reveal */
+.rv{opacity:0;transform:translateY(32px);transition:opacity .8s cubic-bezier(.16,1,.3,1),transform .8s cubic-bezier(.16,1,.3,1)}
+.rv.vis{opacity:1;transform:translateY(0)}
+.d1{transition-delay:.07s}.d2{transition-delay:.14s}.d3{transition-delay:.21s}.d4{transition-delay:.28s}.d5{transition-delay:.35s}.d6{transition-delay:.42s}
 
-.wrap{max-width:1100px;margin:0 auto;padding:0 28px}
+.wrap{max-width:1140px;margin:0 auto;padding:0 32px}
 section{padding:120px 0;position:relative}
 .grad-text{background:var(--grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.label{font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:.14em;text-transform:uppercase;margin-bottom:14px;font-weight:500}
+.sec-title{font-family:var(--font-display);font-size:clamp(32px,4.5vw,50px);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:12px}
+.sec-sub{font-size:17px;line-height:1.7;color:var(--text-2);max-width:560px;font-weight:300}
 
-/* ── NAV ── */
-nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:16px 0;transition:all .3s}
-nav.scrolled{background:rgba(9,9,11,.88);backdrop-filter:blur(20px);border-bottom:1px solid var(--border)}
+/* ─── NAV ─── */
+nav{position:fixed;top:0;left:0;right:0;z-index:100;padding:14px 0;transition:all .35s}
+nav.scrolled{background:rgba(6,6,8,.85);backdrop-filter:blur(24px) saturate(1.4);border-bottom:1px solid var(--border)}
 nav .wrap{display:flex;align-items:center;justify-content:space-between}
 .n-logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--text)}
 .n-mark{width:28px;height:28px;border-radius:7px;background:var(--bg-3);border:1px solid var(--border-2);display:flex;flex-direction:column;align-items:flex-start;justify-content:center;padding:6px 5px;gap:2px}
 .n-mark i{display:block;height:3px;border-radius:2px}
-.n-mark i:nth-child(1){background:#f97316;width:16px}.n-mark i:nth-child(2){background:#fb7185;width:12px}.n-mark i:nth-child(3){background:#a78bfa;width:8px}
-.n-name{font-family:var(--font-display);font-weight:700;font-size:16px}
-.n-dl{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:12px;color:var(--accent-2);text-decoration:none;padding:7px 16px;border-radius:100px;border:1px solid rgba(249,115,22,.25);transition:all .2s}
-.n-dl:hover{background:var(--accent-glow);border-color:rgba(249,115,22,.5)}
+.n-mark i:nth-child(1){background:#f97316;width:16px}
+.n-mark i:nth-child(2){background:#fb7185;width:12px}
+.n-mark i:nth-child(3){background:#a78bfa;width:8px}
+.n-name{font-family:var(--font-display);font-weight:700;font-size:17px;letter-spacing:-.01em}
+.n-links{display:flex;align-items:center;gap:28px}
+.n-links a{font-size:13px;color:var(--text-2);text-decoration:none;transition:color .2s;font-weight:400}
+.n-links a:hover{color:var(--text)}
+.n-dl{display:inline-flex;align-items:center;gap:7px;font-family:var(--font-mono);font-size:12px;color:var(--accent-2);text-decoration:none;padding:8px 18px;border-radius:100px;border:1px solid rgba(249,115,22,.2);background:rgba(249,115,22,.04);transition:all .25s}
+.n-dl:hover{background:rgba(249,115,22,.1);border-color:rgba(249,115,22,.4);box-shadow:0 0 20px rgba(249,115,22,.08)}
+.n-dl svg{width:13px;height:13px}
 
-/* ── HERO ── */
+/* ─── HERO ─── */
 .hero{min-height:100vh;display:flex;align-items:center;padding-top:80px;text-align:center;position:relative;overflow:hidden}
-.hero::before{content:'';position:absolute;top:-40%;left:50%;transform:translateX(-50%);width:1000px;height:1000px;background:radial-gradient(circle,rgba(249,115,22,.06) 0%,rgba(168,85,247,.04) 40%,transparent 70%);pointer-events:none}
+.hero::before{content:'';position:absolute;top:-200px;left:50%;transform:translateX(-50%);width:1200px;height:1200px;background:
+  radial-gradient(ellipse 600px 400px at 50% 30%,rgba(249,115,22,.07) 0%,transparent 70%),
+  radial-gradient(ellipse 400px 300px at 35% 50%,rgba(236,72,153,.04) 0%,transparent 70%),
+  radial-gradient(ellipse 400px 300px at 65% 50%,rgba(167,139,250,.04) 0%,transparent 70%);pointer-events:none}
 .hero .wrap{position:relative;z-index:1}
-.h-badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;color:var(--text-2);padding:5px 14px 5px 10px;border-radius:100px;border:1px solid var(--border-2);background:var(--bg-2);margin-bottom:28px}
-.h-badge .pulse{width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 8px var(--emerald);animation:pulse 2s ease-in-out infinite}
-@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
-.h-title{font-family:var(--font-display);font-size:clamp(48px,9vw,100px);font-weight:800;line-height:.92;letter-spacing:-.04em;margin-bottom:24px}
-.h-sub{font-size:19px;line-height:1.7;color:var(--text-2);max-width:520px;margin:0 auto 40px;font-weight:300}
+
+.h-badge{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-mono);font-size:11px;color:var(--text-2);padding:6px 16px 6px 11px;border-radius:100px;border:1px solid var(--border-2);background:var(--bg-2);margin-bottom:32px;font-weight:400}
+.h-badge .dot{width:7px;height:7px;border-radius:50%;background:var(--emerald);box-shadow:0 0 10px var(--emerald);animation:pulse 2.5s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.75)}}
+
+.h-title{font-family:var(--font-display);font-size:clamp(52px,9.5vw,108px);font-weight:800;line-height:.9;letter-spacing:-.045em;margin-bottom:28px}
+.h-title .line2{display:block;margin-top:.05em}
+
+.h-sub{font-size:19px;line-height:1.75;color:var(--text-2);max-width:540px;margin:0 auto 44px;font-weight:300}
 .h-sub strong{color:var(--text);font-weight:500}
+
 .h-actions{display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap}
-.btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-body);font-weight:600;font-size:15px;padding:15px 32px;border-radius:14px;text-decoration:none;transition:all .25s cubic-bezier(.16,1,.3,1);cursor:pointer;border:none}
-.btn-hot{color:#fff;background:var(--accent);box-shadow:0 2px 24px rgba(249,115,22,.3),inset 0 1px 0 rgba(255,255,255,.15)}
-.btn-hot:hover{transform:translateY(-2px);box-shadow:0 4px 32px rgba(249,115,22,.45),inset 0 1px 0 rgba(255,255,255,.15)}
-.btn-ghost{color:var(--text-2);background:transparent;border:1px solid var(--border-2);font-size:14px;padding:14px 24px}
-.btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.2)}
+.btn{display:inline-flex;align-items:center;gap:9px;font-family:var(--font-body);font-weight:600;font-size:15px;padding:15px 32px;border-radius:14px;text-decoration:none;transition:all .3s cubic-bezier(.16,1,.3,1);cursor:pointer;border:none}
+.btn-hot{color:#fff;background:var(--accent);box-shadow:0 2px 24px rgba(249,115,22,.25),inset 0 1px 0 rgba(255,255,255,.12)}
+.btn-hot:hover{transform:translateY(-2px);box-shadow:0 6px 36px rgba(249,115,22,.4),inset 0 1px 0 rgba(255,255,255,.12)}
+.btn-ghost{color:var(--text-2);background:transparent;border:1px solid var(--border-3);font-size:14px;padding:14px 24px}
+.btn-ghost:hover{color:var(--text);border-color:rgba(255,255,255,.22);background:rgba(255,255,255,.03)}
 .btn svg{width:17px;height:17px}
-.h-meta{font-family:var(--font-mono);font-size:11px;color:var(--text-3);margin-top:20px}
+.h-meta{font-family:var(--font-mono);font-size:11px;color:var(--text-3);margin-top:22px}
 .h-meta span{color:var(--emerald)}
 
-/* ── TERMINAL DEMO ── */
-.demo{margin-top:72px;max-width:640px;margin-left:auto;margin-right:auto}
-.term{background:var(--bg-2);border:1px solid var(--border-2);border-radius:16px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.4)}
-.term-bar{display:flex;align-items:center;gap:7px;padding:12px 16px;border-bottom:1px solid var(--border);background:var(--bg-3)}
-.term-dot{width:10px;height:10px;border-radius:50%;background:var(--bg-4);border:1px solid var(--border-2)}
-.term-title{font-family:var(--font-mono);font-size:11px;color:var(--text-3);margin-left:8px}
-.term-body{padding:20px;font-family:var(--font-mono);font-size:13px;line-height:2;min-height:140px}
-.term-prompt{color:var(--text-3)}
-.term-prompt span{color:var(--emerald)}
-.term-input{color:var(--accent-2)}
-.term-typing{border-right:2px solid var(--accent);animation:blink 1s step-end infinite;padding-right:2px}
-@keyframes blink{50%{border-color:transparent}}
-.term-output{color:var(--text-2);opacity:.6;margin-top:4px;font-size:12px}
+/* speed comparison */
+.speed{margin-top:72px;max-width:520px;margin-left:auto;margin-right:auto}
+.speed-row{display:flex;align-items:center;gap:14px;margin-bottom:16px}
+.speed-row:last-child{margin-bottom:0}
+.speed-label{font-family:var(--font-mono);font-size:11px;color:var(--text-2);width:80px;text-align:right;flex-shrink:0;font-weight:500}
+.speed-track{flex:1;height:32px;background:var(--bg-3);border-radius:8px;overflow:hidden;position:relative;border:1px solid var(--border)}
+.speed-bar{height:100%;border-radius:7px;display:flex;align-items:center;justify-content:flex-end;padding-right:12px;font-family:var(--font-mono);font-size:11px;font-weight:600;transition:width 1.8s cubic-bezier(.22,1,.36,1);width:0}
+.speed-bar.typing{background:var(--bg-5);color:var(--text-3)}
+.speed-bar.voice{background:linear-gradient(90deg,var(--accent),#ec4899);color:#fff;box-shadow:0 0 20px rgba(249,115,22,.2)}
+.speed-bar.typing.go{width:26%}
+.speed-bar.voice.go{width:100%}
+.speed-mult{font-family:var(--font-display);font-size:16px;font-weight:800;width:60px;flex-shrink:0}
+.speed-mult .grad-text{font-size:16px}
 
-/* ── STATS ── */
-.stats{border-top:1px solid var(--border);background:var(--bg-2)}
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:2px}
-.stat{text-align:center;padding:40px 20px;background:var(--bg);border-radius:16px}
-.stat-val{font-family:var(--font-display);font-size:clamp(36px,5vw,52px);font-weight:800;margin-bottom:4px}
+/* ─── WORKS EVERYWHERE ─── */
+.everywhere{border-top:1px solid var(--border);padding:80px 0;overflow:hidden}
+.everywhere .label,.everywhere .sec-sub{text-align:center}
+.everywhere .sec-sub{margin:0 auto 48px;max-width:480px}
+.marquee-wrap{position:relative}
+.marquee-wrap::before,.marquee-wrap::after{content:'';position:absolute;top:0;bottom:0;width:120px;z-index:2;pointer-events:none}
+.marquee-wrap::before{left:0;background:linear-gradient(to right,var(--bg),transparent)}
+.marquee-wrap::after{right:0;background:linear-gradient(to left,var(--bg),transparent)}
+.marquee{display:flex;gap:10px;animation:scroll-left 40s linear infinite;width:max-content}
+.marquee.rev{animation:scroll-right 45s linear infinite}
+@keyframes scroll-left{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+@keyframes scroll-right{0%{transform:translateX(-50%)}100%{transform:translateX(0)}}
+.marquee + .marquee{margin-top:10px}
+.app-pill{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;border-radius:10px;background:var(--bg-2);border:1px solid var(--border);font-size:13px;color:var(--text-2);white-space:nowrap;font-weight:400;transition:all .2s;flex-shrink:0}
+.app-pill:hover{border-color:var(--border-3);color:var(--text);background:var(--bg-3)}
+.app-pill .app-ico{font-size:15px;line-height:1}
+
+/* ─── STATS ─── */
+.stats{border-top:1px solid var(--border);background:var(--bg-2);padding:0}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr)}
+.stat{text-align:center;padding:48px 20px;position:relative}
+.stat+.stat::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:1px;background:var(--border)}
+.stat-val{font-family:var(--font-display);font-size:clamp(36px,5vw,54px);font-weight:800;margin-bottom:6px;letter-spacing:-.03em}
 .stat-val.hot{color:var(--accent)}
 .stat-val.cool{color:var(--cyan)}
 .stat-val.green{color:var(--emerald)}
 .stat-val.pink{color:var(--rose)}
-.stat-label{font-family:var(--font-mono);font-size:10px;color:var(--text-3);letter-spacing:.1em;text-transform:uppercase}
+.stat-label{font-family:var(--font-mono);font-size:10px;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;font-weight:500}
 
-/* ── FEATURES ── */
+/* ─── HOW IT WORKS ─── */
+.how{border-top:1px solid var(--border)}
+.how-grid{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:0;align-items:start;margin-top:56px}
+.step{text-align:center;padding:0 16px}
+.step-num{width:56px;height:56px;border-radius:16px;margin:0 auto 20px;display:flex;align-items:center;justify-content:center;font-size:24px;border:1px solid var(--border-2);background:var(--bg-2);position:relative}
+.step-num::after{content:'';position:absolute;inset:-1px;border-radius:16px;background:var(--grad);opacity:0;transition:opacity .3s;z-index:-1}
+.step:hover .step-num::after{opacity:.15}
+.step h3{font-family:var(--font-display);font-size:18px;font-weight:700;margin-bottom:8px;letter-spacing:-.01em}
+.step p{font-size:14px;line-height:1.65;color:var(--text-2);font-weight:300}
+.step-arrow{display:flex;align-items:center;padding-top:14px;color:var(--text-3)}
+.step-arrow svg{width:28px;height:28px}
+
+/* ─── FEATURES ─── */
 .features{border-top:1px solid var(--border)}
-.feat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:56px}
-.feat{background:var(--bg-2);padding:36px 28px;border-radius:16px;border:1px solid var(--border);transition:all .3s;position:relative;overflow:hidden}
-.feat::after{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:0;transition:opacity .3s}
-.feat:hover{background:var(--bg-3);transform:translateY(-3px)}.feat:hover::after{opacity:1}
-.feat-ico{width:40px;height:40px;border-radius:10px;background:var(--accent-glow);border:1px solid rgba(249,115,22,.12);display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:20px}
-.feat h3{font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:8px}
-.feat p{font-size:14px;line-height:1.65;color:var(--text-2);font-weight:300}
+.pillar-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px}
+.pillar{background:var(--bg-2);border:1px solid var(--border);border-radius:20px;padding:36px 28px;position:relative;overflow:hidden;transition:all .3s}
+.pillar::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:var(--grad);opacity:0;transition:opacity .3s}
+.pillar:hover{border-color:var(--border-2);background:var(--bg-3)}.pillar:hover::before{opacity:1}
+.pillar-ico{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;margin-bottom:20px;font-size:22px}
+.pillar-ico.orange{background:rgba(249,115,22,.08);border:1px solid rgba(249,115,22,.12)}
+.pillar-ico.violet{background:rgba(167,139,250,.08);border:1px solid rgba(167,139,250,.12)}
+.pillar-ico.cyan{background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.12)}
+.pillar-title{font-family:var(--font-display);font-size:19px;font-weight:700;margin-bottom:6px;letter-spacing:-.01em}
+.pillar-desc{font-size:14px;color:var(--text-2);line-height:1.6;margin-bottom:24px;font-weight:300}
+.pillar-features{list-style:none;display:flex;flex-direction:column;gap:14px}
+.pillar-features li{display:flex;align-items:flex-start;gap:10px;font-size:14px;line-height:1.55;color:var(--text-2);font-weight:300}
+.pf-dot{width:5px;height:5px;border-radius:50%;margin-top:7px;flex-shrink:0}
+.pf-dot.orange{background:var(--accent)}.pf-dot.violet{background:var(--violet)}.pf-dot.cyan{background:var(--cyan)}
+.pillar-features li strong{color:var(--text);font-weight:500}
 
-/* ── IPHONE ── */
-.iphone{border-top:1px solid var(--border);background:var(--bg-2)}
-.iphone-grid{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center;margin-top:56px}
-.phone{width:160px;height:320px;border-radius:32px;border:2px solid var(--border-2);background:var(--bg);margin:0 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;box-shadow:0 30px 60px rgba(0,0,0,.4)}
-.phone-notch{position:absolute;top:8px;width:60px;height:18px;border-radius:10px;background:var(--bg-2);border:1px solid var(--border)}
-.phone-mic{width:48px;height:48px;border-radius:50%;background:var(--accent-glow);border:1px solid rgba(249,115,22,.2);display:flex;align-items:center;justify-content:center;animation:mic-p 2.5s ease-in-out infinite}
-@keyframes mic-p{0%,100%{box-shadow:0 0 0 0 rgba(249,115,22,.12)}50%{box-shadow:0 0 0 16px rgba(249,115,22,0)}}
-.phone-lbl{font-family:var(--font-mono);font-size:9px;color:var(--text-3);margin-top:12px;text-transform:uppercase;letter-spacing:.1em}
-.phone-cable{width:2px;height:40px;background:linear-gradient(to bottom,var(--border-2),transparent);margin:0 auto}
-.phone-tag{font-family:var(--font-mono);font-size:10px;color:var(--text-3);text-align:center;margin-top:4px}
-.tip-box{margin-top:20px;padding:14px 16px;border-radius:10px;background:rgba(251,191,36,.04);border:1px solid rgba(251,191,36,.12);display:flex;gap:10px;align-items:flex-start}
-.tip-box p{font-size:13px;line-height:1.6;color:var(--text-2)}.tip-box strong{color:#fbbf24}
+/* ─── PRIVACY ─── */
+.privacy{border-top:1px solid var(--border);background:var(--bg-2);position:relative;overflow:hidden}
+.privacy::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:600px;background:radial-gradient(circle,rgba(34,211,238,.03) 0%,transparent 60%);pointer-events:none}
+.privacy .wrap{position:relative;z-index:1}
+.priv-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:56px}
+.priv-card{padding:32px 24px;border-radius:16px;background:var(--bg);border:1px solid var(--border);text-align:center;transition:all .3s}
+.priv-card:hover{border-color:var(--border-2);transform:translateY(-3px)}
+.priv-ico{width:48px;height:48px;border-radius:14px;margin:0 auto 18px;display:flex;align-items:center;justify-content:center;font-size:24px;background:rgba(34,211,238,.06);border:1px solid rgba(34,211,238,.1)}
+.priv-card h3{font-family:var(--font-display);font-size:16px;font-weight:700;margin-bottom:8px}
+.priv-card p{font-size:13px;line-height:1.65;color:var(--text-2);font-weight:300}
 
-/* ── CTA ── */
-.cta{border-top:1px solid var(--border);text-align:center;position:relative;overflow:hidden;padding:140px 0}
-.cta::before{content:'';position:absolute;bottom:-30%;left:50%;transform:translateX(-50%);width:800px;height:600px;background:radial-gradient(circle,rgba(249,115,22,.05) 0%,transparent 60%);pointer-events:none}
+/* ─── IPHONE ─── */
+.iphone{border-top:1px solid var(--border)}
+.iphone-row{display:flex;align-items:center;gap:56px;margin-top:48px}
+.phone-mini{width:100px;height:200px;border-radius:22px;border:2px solid var(--border-2);background:var(--bg-2);display:flex;flex-direction:column;align-items:center;justify-content:center;position:relative;flex-shrink:0;box-shadow:0 20px 50px rgba(0,0,0,.3)}
+.phone-mini-notch{position:absolute;top:6px;width:40px;height:14px;border-radius:8px;background:var(--bg-3);border:1px solid var(--border)}
+.phone-mini-mic{width:36px;height:36px;border-radius:50%;background:var(--accent-glow);border:1px solid rgba(249,115,22,.15);display:flex;align-items:center;justify-content:center}
+.phone-mini-mic svg{width:18px;height:18px}
+.phone-mini-lbl{font-family:var(--font-mono);font-size:7px;color:var(--text-3);margin-top:8px;text-transform:uppercase;letter-spacing:.1em}
+.iphone-text h3{font-family:var(--font-display);font-size:clamp(24px,3vw,32px);font-weight:800;margin-bottom:12px;letter-spacing:-.02em}
+.iphone-text p{font-size:15px;line-height:1.7;color:var(--text-2);font-weight:300;margin-bottom:16px}
+.tip{display:inline-flex;align-items:center;gap:8px;padding:10px 16px;border-radius:10px;background:rgba(251,191,36,.03);border:1px solid rgba(251,191,36,.1);font-size:12px;color:var(--text-2)}
+.tip strong{color:#fbbf24;font-weight:600}
+
+/* ─── CTA ─── */
+.cta{border-top:1px solid var(--border);text-align:center;position:relative;overflow:hidden;padding:160px 0}
+.cta::before{content:'';position:absolute;bottom:-200px;left:50%;transform:translateX(-50%);width:1000px;height:800px;background:
+  radial-gradient(ellipse 500px 350px at 50% 60%,rgba(249,115,22,.06) 0%,transparent 70%),
+  radial-gradient(ellipse 300px 250px at 40% 50%,rgba(236,72,153,.03) 0%,transparent 70%);pointer-events:none}
 .cta .wrap{position:relative;z-index:1}
-.cta-title{font-family:var(--font-display);font-size:clamp(42px,6vw,72px);font-weight:800;line-height:.95;letter-spacing:-.04em;margin-bottom:20px}
-.cta-sub{font-size:17px;color:var(--text-2);margin-bottom:36px;font-weight:300}
-.cta-req{font-family:var(--font-mono);font-size:11px;color:var(--text-3);margin-top:20px}
+.cta-title{font-family:var(--font-display);font-size:clamp(44px,7vw,80px);font-weight:800;line-height:.92;letter-spacing:-.045em;margin-bottom:20px}
+.cta-sub{font-size:18px;color:var(--text-2);margin-bottom:40px;font-weight:300}
+.cta-req{font-family:var(--font-mono);font-size:11px;color:var(--text-3);margin-top:22px;font-weight:400}
 
-/* ── FOOTER ── */
+/* ─── FOOTER ─── */
 footer{padding:32px 0;border-top:1px solid var(--border)}
 footer .wrap{display:flex;align-items:center;justify-content:space-between}
-.f-text{font-size:12px;color:var(--text-3)}
-.f-links a{color:var(--text-3);text-decoration:none;transition:color .2s;display:flex}.f-links a:hover{color:var(--text-2)}
+.f-text{font-size:12px;color:var(--text-3);font-weight:300}
+.f-links{display:flex;gap:16px}
+.f-links a{color:var(--text-3);text-decoration:none;transition:color .2s;display:flex;font-size:12px}
+.f-links a:hover{color:var(--text-2)}
 
-/* ── RESPONSIVE ── */
+/* ─── RESPONSIVE ─── */
 @media(max-width:900px){
-.stats-row{grid-template-columns:repeat(2,1fr)}
-.feat-grid{grid-template-columns:1fr;gap:10px}
-.iphone-grid{grid-template-columns:1fr;text-align:center}
+  .n-links{display:none}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .stat+.stat::before{display:none}
+  .how-grid{grid-template-columns:1fr;gap:32px}
+  .step-arrow{display:none}
+  .pillar-grid{grid-template-columns:1fr}
+  .priv-grid{grid-template-columns:1fr}
+  .iphone-row{flex-direction:column;text-align:center}
 }
 @media(max-width:600px){
-section{padding:80px 0}
-.wrap{padding:0 18px}
-.stats-row{grid-template-columns:1fr 1fr}
-footer .wrap{flex-direction:column;gap:12px;text-align:center}
+  section{padding:80px 0}
+  .wrap{padding:0 20px}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .speed-label{width:60px;font-size:10px}
+  .speed-mult{width:50px;font-size:14px}
+  footer .wrap{flex-direction:column;gap:14px;text-align:center}
 }
 </style>
 </head>
 <body>
 
+<!-- NAV -->
 <nav><div class="wrap">
-<a href="#" class="n-logo"><div class="n-mark"><i></i><i></i><i></i></div><span class="n-name">Talktiv</span></a>
-<a href="https://github.com/saadzniber/talktiv-site/releases/latest/download/Talktiv.dmg" class="n-dl">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-Download v0.5.1</a>
+  <a href="#" class="n-logo"><div class="n-mark"><i></i><i></i><i></i></div><span class="n-name">Talktiv</span></a>
+  <div class="n-links">
+    <a href="#how">How it works</a>
+    <a href="#features">Features</a>
+    <a href="#privacy">Privacy</a>
+  </div>
+  <a href="https://github.com/saadzniber/talktiv-site/releases/latest/download/Talktiv.dmg" class="n-dl">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+    Download v0.5.1</a>
 </div></nav>
 
 <!-- HERO -->
 <section class="hero"><div class="wrap">
-<div class="h-badge r"><span class="pulse"></span> Free &middot; On-device AI &middot; macOS</div>
-<h1 class="h-title r d1">Talk to<br><span class="grad-text">ship faster.</span></h1>
-<p class="h-sub r d2">You think at <strong>150 words per minute</strong>. You type at 40. Talktiv closes the gap &mdash; speak and text appears instantly wherever your cursor is.</p>
-<div class="h-actions r d3">
-<a href="https://github.com/saadzniber/talktiv-site/releases/latest/download/Talktiv.dmg" class="btn btn-hot">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-Download for macOS</a>
-<a href="#features" class="btn btn-ghost">See features</a>
-</div>
-<p class="h-meta r d4">v0.5.1 &middot; Apple Silicon &middot; <span>Free forever</span></p>
+  <div class="h-badge rv"><span class="dot"></span> Free &middot; On-device AI &middot; macOS</div>
+  <h1 class="h-title rv d1">Talk to type.<span class="line2"><span class="grad-text">3.75&times; faster.</span></span></h1>
+  <p class="h-sub rv d2">Speak naturally and <strong>text appears wherever your cursor is</strong> &mdash; your terminal, editor, browser, anywhere. On-device AI. Completely private.</p>
+  <div class="h-actions rv d3">
+    <a href="https://github.com/saadzniber/talktiv-site/releases/latest/download/Talktiv.dmg" class="btn btn-hot">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download for macOS</a>
+    <a href="#how" class="btn btn-ghost">See how it works &darr;</a>
+  </div>
+  <p class="h-meta rv d4">v0.5.1 &middot; Apple Silicon &middot; <span>Free forever</span></p>
 
-<!-- terminal demo -->
-<div class="demo r d5">
-<div class="term">
-<div class="term-bar"><div class="term-dot"></div><div class="term-dot"></div><div class="term-dot"></div><span class="term-title">iTerm &mdash; claude code</span></div>
-<div class="term-body">
-<div class="term-prompt"><span>~/project</span> $</div>
-<div class="term-input" id="typed"></div>
-<div class="term-output" id="response"></div>
-</div>
-</div>
-</div>
+  <!-- speed comparison -->
+  <div class="speed rv d5" id="speed">
+    <div class="speed-row">
+      <span class="speed-label">Typing</span>
+      <div class="speed-track"><div class="speed-bar typing" id="bar-type">40 wpm</div></div>
+      <span class="speed-mult"></span>
+    </div>
+    <div class="speed-row">
+      <span class="speed-label">Voice</span>
+      <div class="speed-track"><div class="speed-bar voice" id="bar-voice">150 wpm</div></div>
+      <span class="speed-mult"><span class="grad-text">3.75&times;</span></span>
+    </div>
+  </div>
 </div></section>
+
+<!-- WORKS EVERYWHERE -->
+<section class="everywhere"><div class="wrap">
+  <div class="label rv">Works wherever you type</div>
+  <p class="sec-sub rv d1" style="text-align:center;margin:0 auto 48px">Talktiv inserts text at your cursor in any macOS app. No plugins, no extensions &mdash; it just works.</p>
+</div>
+<div class="marquee-wrap">
+  <div class="marquee" id="mq1">
+    <span class="app-pill"><span class="app-ico">&#9000;</span> Terminal</span>
+    <span class="app-pill"><span class="app-ico">&#8811;</span> iTerm</span>
+    <span class="app-pill"><span class="app-ico">&#9883;</span> Warp</span>
+    <span class="app-pill"><span class="app-ico">&#128736;</span> VS Code</span>
+    <span class="app-pill"><span class="app-ico">&#9998;</span> Cursor</span>
+    <span class="app-pill"><span class="app-ico">&#128296;</span> Xcode</span>
+    <span class="app-pill"><span class="app-ico">&#128172;</span> Slack</span>
+    <span class="app-pill"><span class="app-ico">&#127760;</span> Chrome</span>
+    <span class="app-pill"><span class="app-ico">&#129517;</span> Safari</span>
+    <span class="app-pill"><span class="app-ico">&#128466;</span> Notion</span>
+    <span class="app-pill"><span class="app-ico">&#128302;</span> Obsidian</span>
+    <span class="app-pill"><span class="app-ico">&#127912;</span> Figma</span>
+    <span class="app-pill"><span class="app-ico">&#9654;</span> Arc</span>
+    <span class="app-pill"><span class="app-ico">&#9889;</span> Linear</span>
+    <span class="app-pill"><span class="app-ico">&#128640;</span> Raycast</span>
+    <span class="app-pill"><span class="app-ico">&#9000;</span> Terminal</span>
+    <span class="app-pill"><span class="app-ico">&#8811;</span> iTerm</span>
+    <span class="app-pill"><span class="app-ico">&#9883;</span> Warp</span>
+    <span class="app-pill"><span class="app-ico">&#128736;</span> VS Code</span>
+    <span class="app-pill"><span class="app-ico">&#9998;</span> Cursor</span>
+    <span class="app-pill"><span class="app-ico">&#128296;</span> Xcode</span>
+    <span class="app-pill"><span class="app-ico">&#128172;</span> Slack</span>
+    <span class="app-pill"><span class="app-ico">&#127760;</span> Chrome</span>
+    <span class="app-pill"><span class="app-ico">&#129517;</span> Safari</span>
+    <span class="app-pill"><span class="app-ico">&#128466;</span> Notion</span>
+    <span class="app-pill"><span class="app-ico">&#128302;</span> Obsidian</span>
+    <span class="app-pill"><span class="app-ico">&#127912;</span> Figma</span>
+    <span class="app-pill"><span class="app-ico">&#9654;</span> Arc</span>
+    <span class="app-pill"><span class="app-ico">&#9889;</span> Linear</span>
+    <span class="app-pill"><span class="app-ico">&#128640;</span> Raycast</span>
+  </div>
+  <div class="marquee rev" id="mq2">
+    <span class="app-pill"><span class="app-ico">&#128488;</span> ChatGPT</span>
+    <span class="app-pill"><span class="app-ico">&#9993;</span> Mail</span>
+    <span class="app-pill"><span class="app-ico">&#128221;</span> Notes</span>
+    <span class="app-pill"><span class="app-ico">&#128196;</span> Pages</span>
+    <span class="app-pill"><span class="app-ico">&#128490;</span> Discord</span>
+    <span class="app-pill"><span class="app-ico">&#127909;</span> Zoom</span>
+    <span class="app-pill"><span class="app-ico">&#128101;</span> Teams</span>
+    <span class="app-pill"><span class="app-ico">&#128200;</span> Google Docs</span>
+    <span class="app-pill"><span class="app-ico">&#128203;</span> Google Sheets</span>
+    <span class="app-pill"><span class="app-ico">&#128451;</span> Sublime Text</span>
+    <span class="app-pill"><span class="app-ico">&#128421;</span> IntelliJ</span>
+    <span class="app-pill"><span class="app-ico">&#9997;</span> Vim</span>
+    <span class="app-pill"><span class="app-ico">&#128295;</span> Neovim</span>
+    <span class="app-pill"><span class="app-ico">&#128233;</span> Gmail</span>
+    <span class="app-pill"><span class="app-ico">&#128488;</span> ChatGPT</span>
+    <span class="app-pill"><span class="app-ico">&#9993;</span> Mail</span>
+    <span class="app-pill"><span class="app-ico">&#128221;</span> Notes</span>
+    <span class="app-pill"><span class="app-ico">&#128196;</span> Pages</span>
+    <span class="app-pill"><span class="app-ico">&#128490;</span> Discord</span>
+    <span class="app-pill"><span class="app-ico">&#127909;</span> Zoom</span>
+    <span class="app-pill"><span class="app-ico">&#128101;</span> Teams</span>
+    <span class="app-pill"><span class="app-ico">&#128200;</span> Google Docs</span>
+    <span class="app-pill"><span class="app-ico">&#128203;</span> Google Sheets</span>
+    <span class="app-pill"><span class="app-ico">&#128451;</span> Sublime Text</span>
+    <span class="app-pill"><span class="app-ico">&#128421;</span> IntelliJ</span>
+    <span class="app-pill"><span class="app-ico">&#9997;</span> Vim</span>
+    <span class="app-pill"><span class="app-ico">&#128295;</span> Neovim</span>
+    <span class="app-pill"><span class="app-ico">&#128233;</span> Gmail</span>
+  </div>
+</div>
+</section>
 
 <!-- STATS -->
 <section class="stats"><div class="wrap">
-<div class="stats-row">
-<div class="stat r d1"><div class="stat-val hot">3.75x</div><div class="stat-label">Faster than typing</div></div>
-<div class="stat r d2"><div class="stat-val cool">0 ms</div><div class="stat-label">Cloud latency</div></div>
-<div class="stat r d3"><div class="stat-val green">30+</div><div class="stat-label">Languages</div></div>
-<div class="stat r d4"><div class="stat-val pink">100%</div><div class="stat-label">Private &middot; on-device</div></div>
-</div>
+  <div class="stats-row">
+    <div class="stat rv d1"><div class="stat-val hot">3.75&times;</div><div class="stat-label">Faster than typing</div></div>
+    <div class="stat rv d2"><div class="stat-val cool">0 ms</div><div class="stat-label">Cloud latency</div></div>
+    <div class="stat rv d3"><div class="stat-val green">30+</div><div class="stat-label">Languages</div></div>
+    <div class="stat rv d4"><div class="stat-val pink">100%</div><div class="stat-label">Private &middot; on-device</div></div>
+  </div>
+</div></section>
+
+<!-- HOW IT WORKS -->
+<section class="how" id="how"><div class="wrap">
+  <div class="label rv">How it works</div>
+  <h2 class="sec-title rv d1">Three steps. <span class="grad-text">Zero friction.</span></h2>
+  <p class="sec-sub rv d2">No setup. No accounts. No cloud. Just download and talk.</p>
+
+  <div class="how-grid">
+    <div class="step rv d1">
+      <div class="step-num">&#127908;</div>
+      <h3>Speak naturally</h3>
+      <p>Talk to your Mac like you would to a colleague. Talktiv listens with voice activity detection &mdash; no button to press.</p>
+    </div>
+    <div class="step-arrow rv d2">
+      <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="4" y1="14" x2="22" y2="14"/><polyline points="16 8 22 14 16 20"/></svg>
+    </div>
+    <div class="step rv d3">
+      <div class="step-num">&#9889;</div>
+      <h3>AI runs on-device</h3>
+      <p>Whisper AI processes your speech locally on Apple Silicon. Nothing leaves your Mac. Works offline.</p>
+    </div>
+    <div class="step-arrow rv d4">
+      <svg viewBox="0 0 28 28" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="4" y1="14" x2="22" y2="14"/><polyline points="16 8 22 14 16 20"/></svg>
+    </div>
+    <div class="step rv d5">
+      <div class="step-num">&#9998;</div>
+      <h3>Text appears at cursor</h3>
+      <p>Clean, punctuated text is inserted wherever your cursor is &mdash; terminal, editor, browser, any app.</p>
+    </div>
+  </div>
 </div></section>
 
 <!-- FEATURES -->
 <section class="features" id="features"><div class="wrap">
-<div class="r" style="font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px">Features</div>
-<h2 class="r d1" style="font-family:var(--font-display);font-size:clamp(34px,4.5vw,48px);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:8px">Everything you need.<br><span class="grad-text">Nothing you don't.</span></h2>
+  <div class="label rv">Features</div>
+  <h2 class="sec-title rv d1">Everything you need.<br><span class="grad-text">Nothing you don't.</span></h2>
+  <p class="sec-sub rv d2">Three modes of operation, one app. Voice input, developer tools, and meeting intelligence.</p>
 
-<div class="feat-grid">
-<div class="feat r d1">
-<div class="feat-ico">&#127908;</div>
-<h3>Hands-free mode</h3>
-<p>Voice activity detection auto-starts when you speak. No buttons, no shortcuts. Just talk.</p>
-</div>
-<div class="feat r d2">
-<div class="feat-ico">&#9889;</div>
-<h3>Auto-send in terminal</h3>
-<p>Speak a prompt in iTerm, Terminal, or Warp &mdash; Talktiv pastes and hits Enter. Fully hands-free Claude Code.</p>
-</div>
-<div class="feat r d3">
-<div class="feat-ico">&#128274;</div>
-<h3>100% on-device</h3>
-<p>Whisper AI runs locally on Apple Silicon. Your voice never touches a server. Works offline.</p>
-</div>
-<div class="feat r d1">
-<div class="feat-ico">&#128221;</div>
-<h3>Meeting intelligence</h3>
-<p>Record meetings with speaker ID. Auto-extracts summaries, action items, and decisions. Works with Zoom, Teams, Meet.</p>
-</div>
-<div class="feat r d2">
-<div class="feat-ico">&#129302;</div>
-<h3>MCP for Claude Code</h3>
-<p>Claude can search your meetings, find action items, track people &mdash; directly from the terminal.</p>
-</div>
-<div class="feat r d3">
-<div class="feat-ico">&#128466;</div>
-<h3>Live notepad</h3>
-<p>Voice-first text editor. Compose prompts, emails, docs by speaking. Edit inline, then copy.</p>
-</div>
-<div class="feat r d1">
-<div class="feat-ico">&#128483;</div>
-<h3>Smart cleanup</h3>
-<p>Filler words, ums, background noise &mdash; stripped automatically. Only clean text gets typed.</p>
-</div>
-<div class="feat r d2">
-<div class="feat-ico">&#127760;</div>
-<h3>30+ languages</h3>
-<p>English, Spanish, French, Japanese, Chinese, and more. Set a language for better accuracy.</p>
-</div>
-<div class="feat r d3">
-<div class="feat-ico">&#128241;</div>
-<h3>Use your iPhone as mic</h3>
-<p>Plug your iPhone in via USB-C &mdash; it works as a high-quality mic instantly. No extra hardware.</p>
-</div>
-</div>
+  <div class="pillar-grid">
+    <!-- Pillar 1: Voice Input -->
+    <div class="pillar rv d1">
+      <div class="pillar-ico orange">&#127908;</div>
+      <div class="pillar-title">Voice Input</div>
+      <p class="pillar-desc">Speak naturally, get clean text. Talktiv handles the rest.</p>
+      <ul class="pillar-features">
+        <li><span class="pf-dot orange"></span><span><strong>Hands-free mode</strong> &mdash; voice activity detection auto-starts when you speak. No buttons, no shortcuts.</span></li>
+        <li><span class="pf-dot orange"></span><span><strong>Smart cleanup</strong> &mdash; filler words, ums, repetition, and background noise stripped automatically.</span></li>
+        <li><span class="pf-dot orange"></span><span><strong>30+ languages</strong> &mdash; English, Spanish, French, Japanese, Chinese, and more with automatic detection.</span></li>
+      </ul>
+    </div>
+
+    <!-- Pillar 2: Developer Tools -->
+    <div class="pillar rv d2">
+      <div class="pillar-ico violet">&#128296;</div>
+      <div class="pillar-title">Developer Tools</div>
+      <p class="pillar-desc">Built for the terminal. Speak prompts to Claude, Copilot, or any CLI tool.</p>
+      <ul class="pillar-features">
+        <li><span class="pf-dot violet"></span><span><strong>Auto-send in terminal</strong> &mdash; speak in iTerm, Terminal, or Warp. Talktiv pastes and hits Enter. Fully hands-free Claude Code.</span></li>
+        <li><span class="pf-dot violet"></span><span><strong>MCP for Claude Code</strong> &mdash; Claude can search your meetings, find action items, and track context directly from the terminal.</span></li>
+        <li><span class="pf-dot violet"></span><span><strong>Live notepad</strong> &mdash; voice-first text editor. Compose prompts, emails, docs by speaking. Edit inline, then copy.</span></li>
+      </ul>
+    </div>
+
+    <!-- Pillar 3: Meeting Intelligence -->
+    <div class="pillar rv d3">
+      <div class="pillar-ico cyan">&#128221;</div>
+      <div class="pillar-title">Meeting Intelligence</div>
+      <p class="pillar-desc">Record any meeting. Get summaries, action items, and decisions automatically.</p>
+      <ul class="pillar-features">
+        <li><span class="pf-dot cyan"></span><span><strong>Meeting recording</strong> &mdash; capture audio from Zoom, Teams, Meet, or in-person. Works with any audio source.</span></li>
+        <li><span class="pf-dot cyan"></span><span><strong>Speaker identification</strong> &mdash; diarization distinguishes who said what, even in group conversations.</span></li>
+        <li><span class="pf-dot cyan"></span><span><strong>Auto-extracted insights</strong> &mdash; summaries, action items, decisions, and key topics pulled from every meeting.</span></li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- PRIVACY -->
+<section class="privacy" id="privacy"><div class="wrap">
+  <div class="label rv" style="text-align:center">Private by design</div>
+  <h2 class="sec-title rv d1" style="text-align:center">Your voice stays<br><span class="grad-text">on your Mac.</span></h2>
+  <p class="sec-sub rv d2" style="text-align:center;margin:0 auto">No accounts. No telemetry. No cloud processing. Talktiv runs entirely on Apple Silicon.</p>
+
+  <div class="priv-grid">
+    <div class="priv-card rv d1">
+      <div class="priv-ico">&#128274;</div>
+      <h3>100% on-device</h3>
+      <p>Whisper AI runs locally on your Mac&rsquo;s Neural Engine. No API calls, no external servers, no data ever sent.</p>
+    </div>
+    <div class="priv-card rv d2">
+      <div class="priv-ico">&#128263;</div>
+      <h3>Voice never leaves</h3>
+      <p>Your audio is processed in real-time on-device and immediately discarded. Nothing is stored. Nothing is uploaded.</p>
+    </div>
+    <div class="priv-card rv d3">
+      <div class="priv-ico">&#9889;</div>
+      <h3>Works offline</h3>
+      <p>No internet connection required. Talktiv works just as well on a plane, in a cabin, or off the grid.</p>
+    </div>
+  </div>
 </div></section>
 
 <!-- IPHONE -->
 <section class="iphone"><div class="wrap">
-<div class="iphone-grid">
-<div class="r d1" style="display:flex;flex-direction:column;align-items:center">
-<div class="phone">
-<div class="phone-notch"></div>
-<div class="phone-mic">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
-</div>
-<div class="phone-lbl">Recording</div>
-</div>
-<div class="phone-cable"></div>
-<div class="phone-tag">USB-C &rarr; Mac</div>
-</div>
-<div class="r d2">
-<div style="font-family:var(--font-mono);font-size:11px;color:var(--accent);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px">Zero hardware needed</div>
-<h2 style="font-family:var(--font-display);font-size:clamp(30px,4vw,44px);font-weight:800;line-height:1.05;letter-spacing:-.03em;margin-bottom:16px">Your iPhone is already a <span class="grad-text">great mic.</span></h2>
-<p style="font-size:16px;line-height:1.7;color:var(--text-2);font-weight:300">No need to buy a microphone. Plug your iPhone into your Mac with a USB-C cable and it works as a high-quality audio input instantly.</p>
-<div class="tip-box">
-<span style="font-size:16px">&#9889;</span>
-<p><strong>Pro tip:</strong> Wired USB-C gives the best quality and zero latency. Also works wirelessly via Continuity, but wired keeps your phone charged.</p>
-</div>
-</div>
-</div>
+  <div class="iphone-row">
+    <div class="rv d1" style="display:flex;flex-direction:column;align-items:center">
+      <div class="phone-mini">
+        <div class="phone-mini-notch"></div>
+        <div class="phone-mini-mic">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#f97316" stroke-width="1.5"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+        </div>
+        <div class="phone-mini-lbl">Recording</div>
+      </div>
+    </div>
+    <div class="iphone-text rv d2">
+      <h3>Your iPhone is already a <span class="grad-text">great mic.</span></h3>
+      <p>No need to buy a microphone. Plug your iPhone into your Mac via USB-C and it works as a high-quality audio input instantly. Zero setup.</p>
+      <div class="tip"><strong>Pro tip:</strong>&nbsp; Wired USB-C gives best quality + zero latency. Also works wirelessly via Continuity.</div>
+    </div>
+  </div>
 </div></section>
 
 <!-- CTA -->
 <section class="cta"><div class="wrap">
-<h2 class="cta-title r">Stop typing.<br><span class="grad-text">Start shipping.</span></h2>
-<p class="cta-sub r d1">Download Talktiv and code with your voice today. Free forever.</p>
-<div class="r d2">
-<a href="https://github.com/saadzniber/talktiv-site/releases/latest/download/Talktiv.dmg" class="btn btn-hot" style="font-size:17px;padding:18px 40px">
-<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-Download for macOS</a>
-<p class="cta-req">macOS 14 Sonoma or later &middot; Apple Silicon &middot; Free</p>
-</div>
+  <h2 class="cta-title rv">Stop typing.<br><span class="grad-text">Start shipping.</span></h2>
+  <p class="cta-sub rv d1">Download Talktiv and let your voice do the work. Free, private, and fast.</p>
+  <div class="rv d2">
+    <a href="https://github.com/saadzniber/talktiv-site/releases/latest/download/Talktiv.dmg" class="btn btn-hot" style="font-size:17px;padding:18px 42px">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      Download for macOS</a>
+    <p class="cta-req">macOS 14 Sonoma or later &middot; Apple Silicon &middot; Free forever</p>
+  </div>
 </div></section>
 
+<!-- FOOTER -->
 <footer><div class="wrap">
-<span class="f-text">Built by Saad Zniber</span>
-<div class="f-links"><a href="https://github.com/saadzniber/talktiv-site"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg></a></div>
+  <span class="f-text">Built by Saad Zniber</span>
+  <div class="f-links">
+    <a href="https://github.com/saadzniber/talktiv-site">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+    </a>
+  </div>
 </div></footer>
 
 <script>
 // Scroll reveal
-const o=new IntersectionObserver(e=>{e.forEach(el=>{if(el.isIntersecting)el.target.classList.add('v')})},{threshold:.08,rootMargin:'0px 0px -30px 0px'});
-document.querySelectorAll('.r').forEach(el=>o.observe(el));
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(el => { if (el.isIntersecting) el.target.classList.add('vis'); });
+}, { threshold: 0.06, rootMargin: '0px 0px -40px 0px' });
+document.querySelectorAll('.rv').forEach(el => obs.observe(el));
 
 // Nav scroll
-const nav=document.querySelector('nav');
-window.addEventListener('scroll',()=>nav.classList.toggle('scrolled',window.scrollY>40),{passive:true});
+const nav = document.querySelector('nav');
+window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 40), { passive: true });
 
-// Terminal typing animation
-const prompts=[
-  {cmd:"add error handling to the auth service and write tests for edge cases",resp:"Claude is working..."},
-  {cmd:"refactor the database queries to use connection pooling",resp:"Reading 4 files, editing 2..."},
-  {cmd:"fix the race condition in the websocket handler",resp:"Found the issue. Fixing..."},
-];
-let pi=0,ci=0;
-const typed=document.getElementById('typed');
-const resp=document.getElementById('response');
-function typeNext(){
-  const p=prompts[pi];
-  if(ci<=p.cmd.length){
-    typed.innerHTML='<span class="term-typing">'+p.cmd.slice(0,ci)+'</span>';
-    ci++;
-    setTimeout(typeNext,25+Math.random()*35);
-  } else {
-    typed.innerHTML=p.cmd;
-    setTimeout(()=>{resp.textContent=p.resp},400);
-    setTimeout(()=>{
-      typed.innerHTML='';resp.textContent='';ci=0;
-      pi=(pi+1)%prompts.length;
-      typeNext();
-    },3500);
-  }
-}
-setTimeout(typeNext,1500);
+// Speed comparison animation
+const speedObs = new IntersectionObserver(entries => {
+  entries.forEach(el => {
+    if (el.isIntersecting) {
+      document.getElementById('bar-type').classList.add('go');
+      document.getElementById('bar-voice').classList.add('go');
+    }
+  });
+}, { threshold: 0.3 });
+const speedEl = document.getElementById('speed');
+if (speedEl) speedObs.observe(speedEl);
 </script>
 </body>
 </html>
