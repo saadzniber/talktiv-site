@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0" xmlns:sparkle="http://www.andymatuschak.org/xml-namespaces/sparkle" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>Talktiv Updates</title>
+    <link>https://saadzniber.github.io/talktiv-site/appcast.xml</link>
+    <description>Talktiv auto-update feed</description>
+    <language>en</language>
+
+    <item>
+      <title>Talktiv v0.4.0</title>
+      <pubDate>Tue, 08 Apr 2026 12:00:00 +0000</pubDate>
+      <sparkle:version>2</sparkle:version>
+      <sparkle:shortVersionString>0.4.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <description><![CDATA[
+        <h2>What's New in v0.4.0</h2>
+        <ul>
+          <li><strong>Meeting Mode</strong> — Record Zoom, Google Meet, Teams calls with live transcription and speaker identification</li>
+          <li><strong>Voice Notepad</strong> — Dictate freely, edit inline, copy when done</li>
+          <li><strong>Auto-detect meetings</strong> — Detects when meeting windows open, auto-starts recording</li>
+          <li><strong>Speaker diarization</strong> — Identifies different speakers using audio analysis</li>
+          <li><strong>Markdown export</strong> — Meetings saved as .md with YAML frontmatter</li>
+          <li><strong>Meeting intelligence</strong> — Claude API for action items, decisions, summaries</li>
+          <li><strong>Multi-strategy paste</strong> — CGEvent, AppleScript, and AXUIElement fallback chain</li>
+          <li><strong>Smart media control</strong> — Checks actual playback state before pausing</li>
+          <li><strong>File-based logging</strong> — Diagnostics at ~/Library/Application Support/Talktiv/talktiv.log</li>
+          <li><strong>Auto-updates via Sparkle</strong></li>
+        </ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/saadzniber/talktiv-site/releases/download/v0.4.0/Talktiv.dmg"
+        length="6944282"
+        type="application/octet-stream"
+        sparkle:edSignature="qt3EeCsD+5qIGffU+2KG9nAoPcmU9F0cS4rZo0tB64V4FTzl6Y+HE+B5PvZSr+a+c8+5+hdL5xCaq5r6fo2pCQ=="
+      />
+    </item>
+
+  </channel>
+</rss>
