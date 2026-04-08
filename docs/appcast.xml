@@ -7,6 +7,34 @@
     <language>en</language>
 
     <item>
+      <title>Talktiv v0.5.0</title>
+      <pubDate>Tue, 08 Apr 2026 18:00:00 +0000</pubDate>
+      <sparkle:version>3</sparkle:version>
+      <sparkle:shortVersionString>0.5.0</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <description><![CDATA[
+        <h2>Talktiv v0.5.0</h2>
+        <ul>
+          <li><strong>Auto-updates via Sparkle</strong> — you're seeing this because it works!</li>
+          <li><strong>Refreshed icons</strong> — warm gradient waveform brand across all UI</li>
+          <li><strong>Fixed large model loading</strong> and meeting language persistence</li>
+          <li><strong>Multi-strategy paste</strong> — CGEvent, AppleScript, and AXUIElement fallback</li>
+          <li><strong>Smart media control</strong> — checks actual playback state via MediaRemote</li>
+          <li><strong>Meeting auto-detect</strong> — window title analysis, not just app launch</li>
+          <li><strong>Speaker diarization</strong> — audio feature analysis for multiple speakers</li>
+          <li><strong>File-based logging</strong> — diagnostics for troubleshooting</li>
+          <li><strong>Issues banner</strong> — problems surface at top of Settings with one-click fixes</li>
+        </ul>
+      ]]></description>
+      <enclosure
+        url="https://github.com/saadzniber/talktiv-site/releases/download/v0.5.0/Talktiv.dmg"
+        length="7827542"
+        type="application/octet-stream"
+        sparkle:edSignature="YZkJ97ElI5zj37F1RdL5Xl2SM9K0NK0M790KR8QBqcVcwxpd+Lh5KiNOkf4kxoeGlSaRIPorhIAkcxGASkvQAg=="
+      />
+    </item>
+
+    <item>
       <title>Talktiv v0.4.0</title>
       <pubDate>Tue, 08 Apr 2026 12:00:00 +0000</pubDate>
       <sparkle:version>2</sparkle:version>
