@@ -7,6 +7,24 @@
     <language>en</language>
 
     <item>
+      <title>Talktiv v0.10.1</title>
+      <pubDate>Mon, 18 May 2026 18:50:01 +0000</pubDate>
+      <sparkle:version>24</sparkle:version>
+      <sparkle:shortVersionString>0.10.1</sparkle:shortVersionString>
+      <sparkle:minimumSystemVersion>14.0</sparkle:minimumSystemVersion>
+      <description><![CDATA[
+        <h2>Talktiv v0.10.1</h2>
+        <p>See release notes at https://github.com/saadzniber/talktiv-site/releases/tag/v0.10.1</p>
+      ]]></description>
+      <enclosure
+        url="https://github.com/saadzniber/talktiv-site/releases/download/v0.10.1/Talktiv.dmg"
+        length="10985740"
+        type="application/octet-stream"
+        sparkle:edSignature="iY27CTAb5GTJqDFQ8B5+zmuGoDezI1+MB9SplmMOu316mjHtpiMi98LCTAP9+KTgtXsh7PTQnPYLlV9FYD1cBg=="
+      />
+    </item>
+
+    <item>
       <title>Talktiv v0.10.0</title>
       <pubDate>Mon, 18 May 2026 18:29:22 +0000</pubDate>
       <sparkle:version>23</sparkle:version>
