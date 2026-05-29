@@ -4,9 +4,9 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Talktiv — Your voice, everywhere your cursor is</title>
-<meta name="description" content="Talktiv turns speech into text 3.75x faster than typing. On-device Whisper AI. No cloud. Free for macOS.">
+<meta name="description" content="Talktiv turns speech into text 3.75x faster than typing, records meetings, and gives you a transcript-first review workspace. On-device Whisper AI. No cloud. Free for macOS.">
 <meta property="og:title" content="Talktiv — Your voice, everywhere your cursor is">
-<meta property="og:description" content="3.75x faster than typing. On-device AI. No cloud. Speak and text appears wherever your cursor is.">
+<meta property="og:description" content="3.75x faster than typing, private on-device AI, and a calm transcript-first meeting review workspace.">
 <link rel="icon" type="image/x-icon" href="favicon.ico">
 <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
 <link rel="icon" type="image/png" sizes="192x192" href="favicon-192.png">
@@ -166,6 +166,32 @@ nav .wrap{display:flex;align-items:center;justify-content:space-between}
 .pf-dot.orange{background:var(--accent)}.pf-dot.violet{background:var(--violet)}.pf-dot.cyan{background:var(--cyan)}
 .pillar-features li strong{color:var(--text);font-weight:500}
 
+/* ─── MEETING REVIEW ─── */
+.review{border-top:1px solid var(--border);background:linear-gradient(180deg,var(--bg),var(--bg-2));overflow:hidden}
+.review-head{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:48px;align-items:end;margin-bottom:42px}
+.review-points{display:grid;gap:12px}
+.review-point{display:flex;gap:12px;align-items:flex-start;padding:14px 16px;border:1px solid var(--border);border-radius:14px;background:rgba(255,255,255,.025)}
+.review-point b{display:block;font-family:var(--font-display);font-size:15px;margin-bottom:2px;color:var(--text)}
+.review-point span{font-size:13px;line-height:1.55;color:var(--text-2);font-weight:300}
+.review-dot{width:9px;height:9px;border-radius:50%;margin-top:6px;background:var(--accent);box-shadow:0 0 18px rgba(249,115,22,.35);flex-shrink:0}
+.review-dot.v{background:var(--violet);box-shadow:0 0 18px rgba(167,139,250,.35)}
+.review-dot.c{background:var(--cyan);box-shadow:0 0 18px rgba(34,211,238,.35)}
+.review-shell{border:1px solid var(--border-2);border-radius:28px;background:rgba(12,12,16,.82);box-shadow:0 28px 90px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05);overflow:hidden;position:relative}
+.review-shell::before{content:'';position:absolute;inset:0;background:radial-gradient(600px 260px at 70% 0%,rgba(167,139,250,.09),transparent 65%),radial-gradient(480px 260px at 10% 10%,rgba(249,115,22,.08),transparent 65%);pointer-events:none}
+.review-top,.review-player,.review-body{position:relative;z-index:1}
+.review-top{display:flex;align-items:center;gap:14px;padding:18px 20px;border-bottom:1px solid var(--border)}
+.traffic{display:flex;gap:7px}.traffic i{width:11px;height:11px;border-radius:50%;background:var(--bg-5)}.traffic i:nth-child(1){background:#ff5f57}.traffic i:nth-child(2){background:#ffbd2e}.traffic i:nth-child(3){background:#28c840}
+.review-title{font-family:var(--font-display);font-weight:700;letter-spacing:-.01em}.review-top small{color:var(--text-3);font-family:var(--font-mono);font-size:10px}.review-spacer{flex:1}
+.search-pill{font-family:var(--font-mono);font-size:10px;color:var(--text-2);border:1px solid var(--border);border-radius:100px;padding:8px 12px;background:rgba(255,255,255,.03)}
+.review-player{display:grid;grid-template-columns:auto 1fr auto auto;gap:14px;align-items:center;padding:14px 20px;border-bottom:1px solid var(--border);background:rgba(0,0,0,.13)}
+.play-dot{width:32px;height:32px;border-radius:50%;display:grid;place-items:center;background:var(--accent);box-shadow:0 0 24px rgba(249,115,22,.28);font-size:12px;color:white}
+.scrub{height:6px;border-radius:999px;background:rgba(255,255,255,.08);position:relative;overflow:hidden}.scrub::before{content:'';position:absolute;left:0;top:0;bottom:0;width:42%;background:linear-gradient(90deg,var(--accent),#ec4899);border-radius:999px}.scrub::after{content:'';position:absolute;left:41%;top:50%;width:14px;height:14px;border-radius:50%;background:white;transform:translate(-50%,-50%);box-shadow:0 0 18px rgba(255,255,255,.28)}
+.rate-pill{font-family:var(--font-mono);font-size:11px;color:var(--accent-2);padding:6px 10px;border-radius:999px;background:rgba(249,115,22,.09);border:1px solid rgba(249,115,22,.16)}.follow-pill{font-family:var(--font-mono);font-size:10px;color:var(--text-2)}
+.review-body{display:grid;grid-template-columns:210px 1fr;min-height:440px}
+.anchor-list{border-right:1px solid var(--border);padding:18px;background:rgba(255,255,255,.018)}.anchor-label{font-family:var(--font-mono);font-size:10px;color:var(--text-3);letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px}
+.anchor-item{padding:12px;border-radius:12px;border:1px solid transparent;margin-bottom:10px;background:rgba(255,255,255,.025)}.anchor-item.active{border-color:rgba(249,115,22,.22);background:rgba(249,115,22,.08)}.anchor-item b{display:block;font-size:12px;color:var(--text);margin-bottom:4px}.anchor-item span{display:block;font-size:11px;color:var(--text-2);line-height:1.35}
+.transcript-paper{padding:26px 34px 34px;background:rgba(255,255,255,.025)}.transcript-inner{max-width:720px;margin:0 auto}.turn{display:grid;grid-template-columns:54px 86px 1fr;gap:14px;padding:16px;border:1px solid var(--border);border-radius:18px;background:rgba(6,6,8,.48);margin-bottom:14px}.turn.hot{border-color:rgba(167,139,250,.28);background:rgba(167,139,250,.07)}.time{font-family:var(--font-mono);font-size:11px;color:var(--text-3);text-align:right}.speaker{font-size:12px;font-weight:700;color:var(--violet);text-align:right}.words{font-size:15px;line-height:1.65;color:var(--text-2)}.words strong{color:var(--text);font-weight:500}.word-on{color:var(--text);background:rgba(249,115,22,.25);border-radius:6px;padding:1px 4px}.note-chip{display:inline-flex;margin-top:10px;gap:6px;align-items:center;font-size:11px;color:var(--cyan);background:rgba(34,211,238,.08);border:1px solid rgba(34,211,238,.14);border-radius:999px;padding:6px 10px}
+
 /* ─── PRIVACY ─── */
 .privacy{border-top:1px solid var(--border);background:var(--bg-2);position:relative;overflow:hidden}
 .privacy::before{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:800px;height:600px;background:radial-gradient(circle,rgba(34,211,238,.03) 0%,transparent 60%);pointer-events:none}
@@ -216,6 +242,9 @@ footer .wrap{display:flex;align-items:center;justify-content:space-between}
   .how-grid{grid-template-columns:1fr;gap:32px}
   .step-arrow{display:none}
   .pillar-grid{grid-template-columns:1fr}
+  .review-head{grid-template-columns:1fr}
+  .review-body{grid-template-columns:1fr}
+  .anchor-list{border-right:0;border-bottom:1px solid var(--border)}
   .priv-grid{grid-template-columns:1fr}
   .iphone-row{flex-direction:column;text-align:center}
 }
@@ -225,6 +254,7 @@ footer .wrap{display:flex;align-items:center;justify-content:space-between}
   .stats-row{grid-template-columns:1fr 1fr}
   .speed-label{width:60px;font-size:10px}
   .speed-mult{width:50px;font-size:14px}
+  .review-player{grid-template-columns:auto 1fr auto}.follow-pill{display:none}.review-top{flex-wrap:wrap}.search-pill{width:100%;text-align:center}.transcript-paper{padding:20px 14px}.turn{grid-template-columns:1fr;gap:6px}.time,.speaker{text-align:left}
   footer .wrap{flex-direction:column;gap:14px;text-align:center}
 }
 </style>
@@ -237,6 +267,7 @@ footer .wrap{display:flex;align-items:center;justify-content:space-between}
   <div class="n-links">
     <a href="#how">How it works</a>
     <a href="#features">Features</a>
+    <a href="#review">Meeting review</a>
     <a href="#privacy">Privacy</a>
   </div>
   <a href="https://github.com/saadzniber/talktiv-site/releases/latest/download/Talktiv.dmg" class="n-dl">
@@ -419,12 +450,67 @@ footer .wrap{display:flex;align-items:center;justify-content:space-between}
     <div class="pillar rv d3">
       <div class="pillar-ico cyan">&#128221;</div>
       <div class="pillar-title">Meeting Intelligence</div>
-      <p class="pillar-desc">Record any meeting. Get summaries, action items, and decisions automatically.</p>
+      <p class="pillar-desc">Record any meeting, then review it in a calm transcript-first workspace.</p>
       <ul class="pillar-features">
         <li><span class="pf-dot cyan"></span><span><strong>Meeting recording</strong> &mdash; capture audio from Zoom, Teams, Meet, or in-person. Works with any audio source.</span></li>
-        <li><span class="pf-dot cyan"></span><span><strong>Speaker identification</strong> &mdash; diarization distinguishes who said what, even in group conversations.</span></li>
-        <li><span class="pf-dot cyan"></span><span><strong>Auto-extracted insights</strong> &mdash; summaries, action items, decisions, and key topics pulled from every meeting.</span></li>
+        <li><span class="pf-dot cyan"></span><span><strong>Transcript-first review</strong> &mdash; notes, comments, search, timeline, and playback all jump to the exact meeting moment.</span></li>
+        <li><span class="pf-dot cyan"></span><span><strong>Playback highlighting</strong> &mdash; follow along word by word, adjust playback speed, and keep the transcript in sync.</span></li>
       </ul>
+    </div>
+  </div>
+</div></section>
+
+<!-- MEETING REVIEW -->
+<section class="review" id="review"><div class="wrap">
+  <div class="review-head">
+    <div>
+      <div class="label rv">New meeting review</div>
+      <h2 class="sec-title rv d1">A focused reader for<br><span class="grad-text">every meeting moment.</span></h2>
+      <p class="sec-sub rv d2">The new review workspace puts the transcript first. Click a sentence, note, comment, timeline marker, or search result and Talktiv jumps playback to the right timestamp without losing your place.</p>
+    </div>
+    <div class="review-points rv d3">
+      <div class="review-point"><i class="review-dot"></i><span><b>Synchronized playback</b> Word-level highlights track what is being spoken, even at faster playback speeds.</span></div>
+      <div class="review-point"><i class="review-dot v"></i><span><b>Calm anchor rail</b> Decisions, questions, notes, and comments stay nearby without turning into a dense dashboard.</span></div>
+      <div class="review-point"><i class="review-dot c"></i><span><b>Fast search & jump</b> Find a topic, speaker, or note and land directly on the matching transcript turn.</span></div>
+    </div>
+  </div>
+
+  <div class="review-shell rv d4" aria-label="Talktiv meeting review preview">
+    <div class="review-top">
+      <div class="traffic"><i></i><i></i><i></i></div>
+      <div><div class="review-title">Product sync transcript</div><small>42 minutes &middot; 128 turns</small></div>
+      <div class="review-spacer"></div>
+      <div class="search-pill">Search meeting… “timeline”</div>
+    </div>
+    <div class="review-player">
+      <div class="play-dot">▶</div>
+      <div class="scrub"></div>
+      <div class="rate-pill">1.5×</div>
+      <div class="follow-pill">Follow playback on</div>
+    </div>
+    <div class="review-body">
+      <aside class="anchor-list">
+        <div class="anchor-label">Anchors</div>
+        <div class="anchor-item active"><b>Decision · 12:14</b><span>Ship the new review reader this week.</span></div>
+        <div class="anchor-item"><b>Action · 18:42</b><span>Check playback highlighting with speed changes.</span></div>
+        <div class="anchor-item"><b>Comment · 27:09</b><span>Clarify export wording for notes.</span></div>
+      </aside>
+      <main class="transcript-paper">
+        <div class="transcript-inner">
+          <div class="turn">
+            <div class="time">12:08</div><div class="speaker">Maya</div>
+            <div class="words"><strong>The dense layout made review feel like a dashboard.</strong> We should make the transcript the center of gravity.</div>
+          </div>
+          <div class="turn hot">
+            <div class="time">12:14</div><div class="speaker">Saad</div>
+            <div class="words">Exactly. Clicking any anchor should <span class="word-on">jump</span> playback to the right timestamp, highlight the spoken words, and keep the reader calm.<br><span class="note-chip">◆ Decision linked to this moment</span></div>
+          </div>
+          <div class="turn">
+            <div class="time">12:31</div><div class="speaker">Alex</div>
+            <div class="words"><strong>Search should behave the same way.</strong> Find a topic, press return, and the transcript scrolls to that moment.</div>
+          </div>
+        </div>
+      </main>
     </div>
   </div>
 </div></section>
